@@ -1,8 +1,8 @@
 package com.allen.sankeyview.view;
 
 /**
- * 屏幕上点对象实体类
- * 原Point对象x,y为int类型  新建的为Float类型
+ * Point object entity class on the screen
+ * The original Point object x, y is of type int, and the new one is of type Float
  *
  * @author Renjy
  */

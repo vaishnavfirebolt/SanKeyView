@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 节点层级实体类
+ * Node-level entity class
  *
  * @author Renjy
  */
 public class Level {
-    //层级
+    //Hierarchy
     private int level;
-    //当前层级所有节点集合
+    //collection of all nodes in the current level
     private List<Node> nodes;
-    //当前层级所有节点个数
+    //Number of all nodes in the current level
     private int num;
-    //当前所有节点数值之和
+    //sum of all current node values
     private float valueSum;
-    //当前所有节点数值和间隔之和（间隔为百分之一）
+    //The sum of the current value of all nodes and the interval (the interval is one percent)
     private float valueAndPaddingSum;
 
     public int getLevel() {
@@ -64,9 +64,9 @@ public class Level {
     }
 
     /**
-     * 通过层级级别来判断是否是当前等级
-     * @param level 级别
-     * @return true 是同一层级 false 不是同一个层级
+     * Determine whether it is the current level by the level of the hierarchy
+     * @param level level
+     * @return true is the same level false is not the same level
      */
     public boolean equals(int level) {
         return this.level == level;

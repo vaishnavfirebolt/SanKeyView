@@ -5,7 +5,7 @@ import android.graphics.Path;
 import com.allen.sankeyview.view.Point;
 
 /**
- * 桑基图的节点实体类
+ * Sankey diagram node entity class
  *
  * @author Renjy
  */
@@ -15,23 +15,23 @@ public class Node {
      */
 
     private String name;
-    //节点的级别 根节点为0
+    //The level of the node The root node is 0
     private int nodeLevel;
-    //是否为尾节点
+    //Whether it is a tail node
     private boolean isLastNode = false;
-    //当前节点的值
+    //the value of the current node
     private float value;
-    //节点开始点
+    //Node start point
     private Point startPoint;
-    //节点结束点
+    //node end point
     private Point endPoint;
-    //节点path
+    //node path
     private Path nodePath;
-    //节点已输入的值
+    //the value the node has entered
     private float inputValueSum;
-    //节点已输出的值
+    //The value the node has output
     private float outputValueSum;
-    //节点的高度
+    //the height of the node
     private float nodeHeight;
 
 

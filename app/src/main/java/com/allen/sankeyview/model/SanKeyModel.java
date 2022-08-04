@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 桑基图的实体类
+ * Sankey diagram entity class
  *
  * @author Renjy
  */
@@ -12,23 +12,23 @@ public class SanKeyModel {
 
     private List<Node> nodes;
     private List<Link> links;
-    //根级节点集合
+    //root-level node collection
     private List<Node> rootNodes;
-    //节点最大的级别（从1开始 顶级为0）
+    //The maximum level of the node (starting from 1, top level is 0)
     private int maxLevel;
-    //层级集合
+    //Hierarchical collection
     private List<Level> levelList;
-    //层级数值之和的最大值
+    //The maximum value of the sum of the level values
     private float maxLevelValueSum;
-    //层级数值和间隔之和的最大值
+    //The maximum value of the sum of the level value and the interval
     private float maxLevelValueAndPaddingSum;
-    //节点之间的间隔
+    //interval between nodes
     private float mNodePadding;
-    //选中的节点
+    //selected node
     private Node selectNode;
-    //选中的线
+    //selected line
     private Link selectLink;
-    //是否拥有绘制所需的值
+    //Does it have the values needed to draw
     private boolean isCalculation;
 
     public List<Node> getNodes() {
@@ -112,14 +112,6 @@ public class SanKeyModel {
 
     public void setSelectLink(Link selectLink) {
         this.selectLink = selectLink;
-    }
-
-    /**
-     * 取消已选中的节点和线
-     */
-    public void cancelSelectNodeAndLink(){
-        this.selectNode = null;
-        this.selectLink = null;
     }
 
     public boolean isCalculation() {

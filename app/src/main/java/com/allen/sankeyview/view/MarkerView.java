@@ -3,17 +3,19 @@ package com.allen.sankeyview.view;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.allen.sankeyview.R;
+import com.allen.sankeyview.model.Node;
 import com.allen.sankeyview.utils.DensityUtil;
 
 
 /**
- * 节点流程图的MarkerView
+ * node flow chart MarkerView
  *
  * @author Renjy
  */
@@ -21,11 +23,11 @@ public class MarkerView extends RelativeLayout {
     private Context mContext;
     private View view;
     private TextView titleTV, contentTV;
-    //markerView x轴平移的动画
+    //Animation of markerView x-axis translation
     private ObjectAnimator translationX;
-    //markerView y轴方向平移的动画
+    //MarkerView y-axis translation animation
     private ObjectAnimator translationY;
-    //markerView 平移动画集合
+    //markerView panning animation collection
     private AnimatorSet animatorSet;
 
     public MarkerView(Context context) {
@@ -37,25 +39,24 @@ public class MarkerView extends RelativeLayout {
     }
 
     /**
-     * 初始化
-     * 1、添加默认布局
-     * 2、初始化属性动画的相关对象
+     * initialization
+     * 1. Add default layout
+     * 2. Initialize related objects of property animation
      */
     private void init() {
         setupLayoutResource();
         translationX = new ObjectAnimator();
         translationY = new ObjectAnimator();
-        animatorSet = new AnimatorSet();  //组合动画
+        animatorSet = new AnimatorSet();  //Combine animation
     }
 
     /**
-     * 添加默认的MarkerView布局
+     * Add default MarkerView layout
      */
     private void setupLayoutResource() {
         view = LayoutInflater.from(mContext).inflate(R.layout.marker_view, this);
         titleTV = findViewById(R.id.marker_x_value);
         contentTV = findViewById(R.id.marker_content);
-        view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.bringToFront();
@@ -70,42 +71,50 @@ public class MarkerView extends RelativeLayout {
      * @param width    节点图的宽度
      * @param height   节点图的高度
      */
-    public void refreshContent(final Point point, final int width, final int height, String markText) {
+    public void refreshContent(final Point point, final int width, final int height, Node node) {
         if (null != titleTV) {
-            titleTV.setText(markText);
+            titleTV.setText(node.getName());
         }
+        this.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, (int) Math.max(200,(node.getEndPoint().y - node.getStartPoint().y))));
         this.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         this.layout(0, 0, this.getMeasuredWidth(), this.getMeasuredHeight());
-        moveMarkerView(point, width, height);
+        moveMarkerView(point, width, height, node);
 
 
     }
 
     /**
-     * 使用属性动画移动MarkerView到点击点
-     *
-     * @param point  点击的点
-     * @param width  View的宽度
-     * @param height View的高度
+     * Move MarkerView to click point using property animation
+     *  @param point the point to click
+     * @param width The width of the View
+     * @param height Height of View
+     * @param isLevelZero
      */
-    private void moveMarkerView(Point point, int width, int height) {
-        //MarkerView 显示点击点的右边中间
+    private void moveMarkerView(Point point, int width, int height, Node node) {
+        //MarkerView Show the middle right of the clicked point
         int offsetX;
         int offsetY;
         int measuredWidth = this.getMeasuredWidth();
         int measuredHeight = this.getMeasuredHeight();
-        int markerViewMargin = DensityUtil.dip2px(mContext, 5);
-        //计算x轴的偏移量
-        if (point.x + measuredWidth > width - markerViewMargin) {//判断markerView的右边
+
+        int markerViewMargin = DensityUtil.dip2px(mContext, 2);
+        Log.d("measured height", "moveMarkerView: " + measuredHeight + " " + node.getNodeHeight() + " " + markerViewMargin);
+        //Calculate the offset of the x-axis
+        if(node.getNodeLevel() == 0) {
             offsetX = (int) (point.x - measuredWidth);
-        } else {
-            offsetX = (int) point.x;
+        }else {
+            if (point.x + measuredWidth > width - markerViewMargin) {//Determine the right side of markerView
+                offsetX = (int) (point.x - measuredWidth);
+            } else {
+                offsetX = (int) point.x;
+            }
         }
 
-        //计算y轴的偏移量
-        if (point.y < (measuredHeight / 2 + markerViewMargin)) {//计算上边
+
+        //Calculate the offset of the y-axis
+        if (point.y < (measuredHeight / 2 + markerViewMargin)) {//Calculate the top
             offsetY = markerViewMargin;
-        } else if ((point.y + measuredHeight / 2) < (height - markerViewMargin)) {//计算下边
+        } else if ((point.y + measuredHeight / 2) < (height - markerViewMargin)) {//Calculate the bottom
             offsetY = (int) (point.y - measuredHeight / 2);
         } else {
             offsetY = height - markerViewMargin - measuredHeight;
@@ -118,14 +127,14 @@ public class MarkerView extends RelativeLayout {
         }
         translationX = ObjectAnimator.ofFloat(view, "translationX", offsetX, offsetX);
         translationY = ObjectAnimator.ofFloat(view, "translationY", offsetY, offsetY);
-        animatorSet.playTogether(translationX, translationY); //设置动画
-        animatorSet.setDuration(3);  //设置动画时间
-        animatorSet.start(); //启动
+        animatorSet.playTogether(translationX, translationY); //Set animation
+        animatorSet.setDuration(3); //Set the animation time
+        animatorSet.start(); //Start
         view.setVisibility(VISIBLE);
     }
 
     /**
-     * 隐藏MarkerView
+     * Hide MarkerView
      */
     public void hide() {
         view.setVisibility(View.GONE);

@@ -11,34 +11,34 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 桑基图的工具类
+ * Sankey diagram tools
  *
  * @author Renjy
  */
 public class SanKeyUtil {
     /**
-     * 计算桑基图的数据
+     * Calculate the data for the Sankey diagram
      *
-     * @param model 数据
+     * @param model data
      */
-    public static void calculationSanKeyModel(SanKeyModel model) {
-        //获取所有根节点
+    public static void   calculationSanKeyModel(SanKeyModel model) {
+        // get all root nodes
         getRootNodes(model);
-        //计算所有的线和每个节点的级别（从根节点到尾节点）
+        // Calculate all lines and level of each node (from root to tail)
         calculationAllLinks(model);
-        //计算所有节点的数值(比重值)
+        //Calculate the value of all nodes (specific gravity value)
         calculationNodesValue(model);
-        //计算层级相关数据
+        //Calculate level related data
         calculationLevel(model);
-        //计算每一层级数值总和（比重总和）
+        //Calculate the sum of the values of each level (sum of proportions)
         calculationLevelNodeValue(model);
-        //计算每一层级数值和间隔之和（间隔为层级最大值的百分之）
+        //Calculate the sum of the value of each level and the interval (the interval is a percentage of the maximum value of the level)
         calculationLevelNodeAndPaddingSum(model);
     }
 
 
     /**
-     * 获取根节点（顶级节点）
+     * Get the root node (top-level node)
      *
      * @param model 桑基图实体类
      */
@@ -62,7 +62,7 @@ public class SanKeyUtil {
     }
 
     /**
-     * 计算所有的连接线，从根节点到尾节点
+     * Calculate all the connecting lines, from the root node to the tail node
      *
      * @param model 数据
      */
@@ -91,7 +91,7 @@ public class SanKeyUtil {
 
 
     /**
-     * 获取下一个节点
+     * get next node
      *
      * @param node  数据
      * @param links 连接线
@@ -119,7 +119,7 @@ public class SanKeyUtil {
     }
 
     /**
-     * 通过节点的名称获取对应的节点
+     * Get the corresponding node by the name of the node
      *
      * @param name  节点名称
      * @param nodes 所有节点
@@ -137,7 +137,7 @@ public class SanKeyUtil {
     }
 
     /**
-     * 计算节点的数值
+     * Calculate the value of the node
      *
      * @param model 数值
      */
@@ -157,7 +157,7 @@ public class SanKeyUtil {
     }
 
     /**
-     * 计算层级相关数据
+     * Computational level related data
      *
      * @param model 数据
      */
@@ -177,7 +177,7 @@ public class SanKeyUtil {
     }
 
     /**
-     * 添加节点到层级中
+     * Add nodes to the hierarchy
      *
      * @param node      节点
      * @param levelList 层级集合
@@ -218,7 +218,7 @@ public class SanKeyUtil {
 
 
     /**
-     * 计算每一层级节点数值的总和
+     * Calculate the sum of the node values at each level
      *
      * @param model 数据
      */
@@ -239,11 +239,11 @@ public class SanKeyUtil {
             }
         }
         model.setMaxLevelValueSum(maxLevelValueSum);
-        model.setNodePadding(maxLevelValueSum * 0.02f);
+        model.setNodePadding(maxLevelValueSum * 0.08f);
     }
 
     /**
-     * 计算每一层级数值和间隔之和（间隔为最大值的百分之二）
+     * Calculate the sum of the value of each level and the interval
      *
      * @param model 数据
      */
@@ -251,9 +251,10 @@ public class SanKeyUtil {
         List<Level> levelList = model.getLevelList();
         float maxLevelValueAndPaddingSum = model.getMaxLevelValueAndPaddingSum();
         float nodePadding = model.getNodePadding();
+        float maxLevelValueSum = model.getMaxLevelValueSum();
         for (Level level : levelList) {
-            float paddingSum = (level.getNum() - 1) * nodePadding;
-            level.setValueAndPaddingSum(level.getValueSum() + paddingSum);
+            float paddingSum = level.getNum() * maxLevelValueSum * 2 + (level.getNum() - 1 * nodePadding);
+            level.setValueAndPaddingSum(paddingSum);
             if (level.getValueAndPaddingSum() > maxLevelValueAndPaddingSum) {
                 maxLevelValueAndPaddingSum = level.getValueAndPaddingSum();
             }

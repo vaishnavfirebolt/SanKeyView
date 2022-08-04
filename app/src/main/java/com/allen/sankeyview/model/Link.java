@@ -5,7 +5,7 @@ import android.graphics.Path;
 import com.allen.sankeyview.view.Point;
 
 /**
- * 各个节点之间连接线的实体类
+ * Entity class for connecting lines between nodes
  *
  * @author Renjy
  */
@@ -19,15 +19,15 @@ public class Link {
     private String source;
     private String target;
     private float value;
-    //资源节点的开始位置
+    //The starting position of the resource node
     private Point sourceStartPoint;
-    //资源节点的结束位置
+    //The end position of the resource node
     private Point sourceEndPoint;
-    //目标节点的开始位置
+    //the starting position of the target node
     private Point targetStartPoint;
-    //目标节点的结束位置
+    //the end position of the target node
     private Point targetEndPoint;
-    //连接线的路径
+    //the path of the connecting line
     private Path linkLinePath;
 
     public String getSource() {

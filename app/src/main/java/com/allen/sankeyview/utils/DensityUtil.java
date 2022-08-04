@@ -6,7 +6,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 /**
- * <p>风辨率转换工具类</p>
+ * <p>Wind Resolution Conversion Tool</p>
  *
  * @author guor
  * @version 2017-6-20 18:19
@@ -14,11 +14,11 @@ import android.view.WindowManager;
 public class DensityUtil {
 
     /**
-     * <p>根据手机的分辨率从 dp 的单位转成为 px(像素)</p>
+     * <p>Convert from dp units to px (pixels) according to the resolution of the phone</p>
      *
-     * @param context 上下文环境
-     * @param dpValue dp值
-     * @return px值
+     * @param context context
+     * @param dpValue dp value
+     * @return px value
      */
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -26,11 +26,11 @@ public class DensityUtil {
     }
 
     /**
-     * <p>根据手机的分辨率从 px(像素) 的单位转成为 dp</p>
+     * <p>Convert from px (pixel) unit to dp</p>
      *
-     * @param context 上下文环境
-     * @param pxValue px值
-     * @return dp值
+     * @param context context
+     * @param pxValue px value
+     * @return dp value
      */
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -38,7 +38,7 @@ public class DensityUtil {
     }
 
     /**
-     * <p>根据手机的分辨率从 px(像素) 的单位转成为 sp</p>
+     * <p>Convert from px (pixel) unit to sp</p>
      *
      * @param context 上下文环境
      * @param pxValue px值
@@ -50,7 +50,7 @@ public class DensityUtil {
     }
 
     /**
-     * <p>根据手机的分辨率从 sp 的单位转成为 px(像素)</p>
+     * <p>Convert from the unit of sp to px (pixel) according to the resolution of the mobile phone</p>
      *
      * @param context 上下文环境
      * @param spValue sp值
@@ -62,7 +62,7 @@ public class DensityUtil {
     }
 
     /**
-     * <p>获取屏幕宽度（像素值）</p>
+     * <p>Get screen width (pixel value)</p>
      *
      * @param context 上下文环境
      * @return 屏幕宽度
@@ -76,7 +76,7 @@ public class DensityUtil {
     }
 
     /**
-     * <p>获取屏幕高度（像素值）</p>
+     * <p>Get screen height (pixel value)</p>
      *
      * @param context 上下文环境
      * @return 屏幕高度

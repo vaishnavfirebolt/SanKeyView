@@ -1,46 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/data0"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="data0" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/data1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="data1" />
+            <Button
+                android:id="@+id/data0"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="data0" />
 
-        <Button
-            android:id="@+id/data2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="data2" />
+            <Button
+                android:id="@+id/data1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="data1" />
+
+            <Button
+                android:id="@+id/data2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="data2" />
+
+        </LinearLayout>
+
+        <com.allen.sankeyview.view.SanKeyGroup
+            android:id="@+id/san_key_group"
+            android:layout_width="match_parent"
+            android:layout_height="1000dp" />
+
+        <com.allen.sankeyview.view.SanKeyView
+            android:id="@+id/san_key_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
-
-    <com.allen.sankeyview.view.SanKeyGroup
-        android:id="@+id/san_key_group"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.allen.sankeyview.view.SanKeyView
-        android:id="@+id/san_key_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-</LinearLayout>
+</ScrollView>

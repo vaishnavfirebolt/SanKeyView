@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.allen.sankeyview.model.Level;
 import com.allen.sankeyview.model.Link;
@@ -30,35 +32,35 @@ public class SanKeyView extends View {
             "#66CC66", "#FF6666", "#FFED6F", "#ff7f50", "#87cefa"};
 
     private Context mContext;
-    //View的宽度
+    //The width of the View
     private int mWidth;
-    //View的高度
+    //height of View
     private int mHeight;
-    //View的实体对象
+    //View entity object
     private SanKeyModel mSanKeyModel;
-    //内容PaddingLeft
+    //Content PaddingLeft
     private int mPaddingLeft;
-    //内容PaddingRight
+    //Content PaddingRight
     private int mPaddingRight;
-    //内容PaddingTop
+    //Content PaddingTop
     private int mPaddingTop;
-    //内容PaddingBottom
+    //Content PaddingBottom
     private int mPaddingBottom;
-    //节点的宽度
+    // width of the node
     private int nodeWidth;
-    //图例和节点之间的间隔
+    // space between legend and nodes
     private int legendPadding;
-    //绘制节点的画笔
+    //Brush to draw the node
     private Paint mNodePaint;
-    //绘制额节点边界的画笔
+    //Brush for drawing the border of the node
     private Paint mNodeBoundPaint;
-    //绘制连接线的画笔
+    //Brush for drawing connecting lines
     private Paint mLinkLinePaint;
-    //绘制图例的画笔
+    //Brush for drawing legend
     private Paint mLegendPaint;
-    //节点流程图的父容器
+    //The parent container of the node flow chart
     private SanKeyGroup sanKeyGroup;
-    //测量View是否完成
+    // measure whether the View is complete
     private boolean isMeasure;
 
 
@@ -77,29 +79,29 @@ public class SanKeyView extends View {
     }
 
     private void init() {
-        mPaddingLeft = DensityUtil.dip2px(mContext, 10);
+        mPaddingLeft = DensityUtil.dip2px(mContext, 80);
         mPaddingTop = DensityUtil.dip2px(mContext, 10);
-        mPaddingRight = DensityUtil.dip2px(mContext, 40);
-        mPaddingBottom = mPaddingTop;
+        mPaddingRight = DensityUtil.dip2px(mContext, 80);
+        mPaddingBottom = DensityUtil.dip2px(mContext, 10);
         nodeWidth = DensityUtil.dip2px(mContext, 10);
-        legendPadding = DensityUtil.dip2px(mContext, 2);
-        //初始化绘制节点区域的画笔
+        legendPadding = DensityUtil.dip2px(mContext, 10);
+        //Initialize the brush for drawing the node area
         mNodePaint = new Paint();
         mNodePaint.setAntiAlias(true);
         mNodePaint.setStyle(Paint.Style.FILL);
-        //初始化绘制节点边界区域的画笔
+        //Initialize the brush that draws the boundary area of the node
         mNodeBoundPaint = new Paint();
         mNodeBoundPaint.setAntiAlias(false);
         mNodeBoundPaint.setStyle(Paint.Style.STROKE);
         mNodeBoundPaint.setColor(Color.BLACK);
         mNodeBoundPaint.setStrokeWidth(DensityUtil.dip2px(mContext, 1));
-        //初始化绘制连接线的画笔
+        //Initialize the brush for drawing the connecting line
         mLinkLinePaint = new Paint();
         mLinkLinePaint.setAntiAlias(true);
-        mLinkLinePaint.setColor(Color.GRAY);
+        mLinkLinePaint.setColor(Color.BLUE);
         mLinkLinePaint.setAlpha(180);
         mLinkLinePaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        //绘制图例的画笔
+        //Brush for drawing legend
         mLegendPaint = new Paint();
         mLegendPaint.setAntiAlias(true);
         mLegendPaint.setTextSize(DensityUtil.sp2px(mContext, 10));
@@ -117,7 +119,7 @@ public class SanKeyView extends View {
     }
 
     /**
-     * 计算绘制需要的相关数据
+     * Calculate the relevant data needed for drawing
      */
     private void calculation() {
         if (null != mSanKeyModel) {
@@ -128,10 +130,9 @@ public class SanKeyView extends View {
             SanKeyUtil.calculationSanKeyModel(mSanKeyModel);
             long endTime = System.currentTimeMillis();
             Log.e("tog", endTime - startTime + "ms");
-            mSanKeyModel.getNodes();
-            //计算节点在View绘制的路径
+            //Calculate the path drawn by the node in the View
             calculationNodePath();
-            //计算连接线的路径
+            //Calculate the path of the connecting line
             calculationLinkLinePath();
             mSanKeyModel.setCalculation(true);
             invalidate();
@@ -157,30 +158,32 @@ public class SanKeyView extends View {
     }*/
 
     /**
-     * 计算节点在View上的路径
+     * Calculate the path of the node on the View
      */
     private void calculationNodePath() {
         if (null == mSanKeyModel) {
             return;
         }
         List<Level> levelList = mSanKeyModel.getLevelList();
+        float maxValueAndPaddingSum = mSanKeyModel.getMaxLevelValueAndPaddingSum();
         float levelHorizontalPadding = (mWidth - mPaddingLeft - mPaddingRight) * 1.0f / (mSanKeyModel.getMaxLevel() - 1);
-        float unitValueHeight = (mHeight - mPaddingTop - mPaddingBottom) / mSanKeyModel.getMaxLevelValueAndPaddingSum();
+        float maxLevelValueSum = mSanKeyModel.getMaxLevelValueSum();
+        float nodePadding = mSanKeyModel.getNodePadding();
         for (Level level : levelList) {
             List<Node> nodes = level.getNodes();
-            //float levelVerticalPadding = (mSanKeyModel.getMaxLevelValueAndPaddingSum() - level.getValueAndPaddingSum()) * unitValueHeight * 0.5f;
-            float levelVerticalPadding = 0;
-            float currentValueSum = 0;
             for (int i = 0; i < nodes.size(); i++) {
                 Node node = nodes.get(i);
                 Point startPoint = new Point();
+                float midPoint;
+                if(level.getLevel() == 0) {
+                    midPoint = mPaddingTop + maxValueAndPaddingSum / 2;
+                }else midPoint = mPaddingTop + i * (maxLevelValueSum * 2 + nodePadding) + maxLevelValueSum;
                 startPoint.x = mPaddingLeft + (level.getLevel()) * levelHorizontalPadding;
-                startPoint.y = mPaddingTop + levelVerticalPadding + currentValueSum * unitValueHeight;
+                startPoint.y = midPoint - node.getValue();
                 node.setStartPoint(startPoint);
-                currentValueSum += node.getValue();
                 Point endPoint = new Point();
                 endPoint.x = mPaddingLeft + (level.getLevel()) * levelHorizontalPadding;
-                endPoint.y = mPaddingTop + levelVerticalPadding + currentValueSum * unitValueHeight;
+                endPoint.y = midPoint + node.getValue();
                 node.setEndPoint(endPoint);
                 node.setNodeHeight(endPoint.y - startPoint.y);
                 Path path = new Path();
@@ -189,14 +192,13 @@ public class SanKeyView extends View {
                 path.lineTo(endPoint.x + nodeWidth, endPoint.y);
                 path.lineTo(endPoint.x, endPoint.y);
                 path.close();
-                node.setNodePath(path);
-                currentValueSum += mSanKeyModel.getNodePadding();
+                node.setNodePath(path);;
             }
         }
     }
 
     /**
-     * 计算连接线的路径
+     * Calculate the path of the connector
      */
     private void calculationLinkLinePath() {
         if (null == mSanKeyModel) {
@@ -205,7 +207,7 @@ public class SanKeyView extends View {
         List<Link> links = mSanKeyModel.getLinks();
         List<Node> nodes = mSanKeyModel.getNodes();
         for (Link link : links) {
-            //设置资源节点开始点和结束点位置
+            //Set the resource node start point and end point position
             Node sourceNode = SanKeyUtil.getNodeFromNodeName(link.getSource(), nodes);
             Point sourceStartPoint = new Point();
             sourceStartPoint.x = sourceNode.getStartPoint().x + nodeWidth;
@@ -216,7 +218,7 @@ public class SanKeyView extends View {
             sourceEndPoint.y = sourceNode.getStartPoint().y + sourceNode.getNodeHeight() * (sourceNode.getOutputValueSum() + link.getValue()) / sourceNode.getValue();
             link.setSourceEndPoint(sourceEndPoint);
             sourceNode.setOutputValueSum(sourceNode.getOutputValueSum() + link.getValue());
-            //设置目标节点开始点和结束点的位置
+            //Set the position of the target node start and end points
             Node targetNode = SanKeyUtil.getNodeFromNodeName(link.getTarget(), nodes);
             Point targetStartPoint = new Point();
             targetStartPoint.x = targetNode.getStartPoint().x;
@@ -229,7 +231,7 @@ public class SanKeyView extends View {
             targetNode.setInputValueSum(targetNode.getInputValueSum() + link.getValue());
             Path linkLinePath = new Path();
             linkLinePath.moveTo(sourceStartPoint.x, sourceStartPoint.y);
-            //贝塞尔曲线的控制点
+            //Control Points for Bezier Curves
             Point point1 = new Point();
             point1.x = sourceStartPoint.x + (targetStartPoint.x - sourceStartPoint.x) * 0.25f;
             point1.y = sourceStartPoint.y;
@@ -242,7 +244,7 @@ public class SanKeyView extends View {
             point3.y = targetStartPoint.y;
             linkLinePath.quadTo(point3.x, point3.y, targetStartPoint.x, targetStartPoint.y);
             linkLinePath.lineTo(targetEndPoint.x, targetEndPoint.y);
-            //贝塞尔曲线的控制点
+            //Control Points for Bezier Curves
             Point point4 = new Point();
             point4.x = sourceStartPoint.x + (targetStartPoint.x - sourceStartPoint.x) * 0.75f;
             point4.y = targetEndPoint.y;
@@ -265,30 +267,31 @@ public class SanKeyView extends View {
         super.onDraw(canvas);
         drawLinkLine(canvas);
         drawNodes(canvas);
-        //drawLegendText(canvas);
+        showAllMarkerView();
     }
 
-    /**
-     * 绘制每一个节点的图例文本
-     *
-     * @param canvas 画布
-     */
-    private void drawLegendText(Canvas canvas) {
+    public void showAllMarkerView(){
+        if (null == sanKeyGroup) {
+            sanKeyGroup = (SanKeyGroup) getParent();
+        }
         List<Node> nodes = mSanKeyModel.getNodes();
         for (Node node : nodes) {
-            Point nodeCenterPoint = new Point();
-            nodeCenterPoint.x = node.getStartPoint().x + nodeWidth;
-            nodeCenterPoint.y = (int) (node.getStartPoint().y + (node.getEndPoint().y - node.getStartPoint().y) * 0.5f);
-            Rect boundRect = new Rect();
-            mLegendPaint.getTextBounds(node.getName(), 0, node.getName().length(), boundRect);
-            canvas.drawText(node.getName(), nodeCenterPoint.x + legendPadding, nodeCenterPoint.y + boundRect.height() * 0.5f, mLegendPaint);
+            Point point = new Point();
+            if(node.getNodeLevel() == 0){
+                point.x = node.getStartPoint().x;
+            }else point.x = node.getStartPoint().x + nodeWidth;
+            point.y = (int) (node.getStartPoint().y + (node.getEndPoint().y - node.getStartPoint().y) * 0.5f);
+            MarkerView markerView = new MarkerView(mContext);
+            markerView.refreshContent(point, mWidth, mHeight, node);
+            sanKeyGroup.addView(markerView);
+
         }
     }
 
     /**
-     * 绘制节点
+     * draw the node
      *
-     * @param canvas 画布
+     * @param canvas canvas
      */
     private void drawNodes(Canvas canvas) {
         List<Node> nodes = mSanKeyModel.getNodes();
@@ -307,9 +310,9 @@ public class SanKeyView extends View {
     }
 
     /**
-     * 绘制
+     * draw
      *
-     * @param canvas 画布
+     * @param canvas canvas
      */
     private void drawLinkLine(Canvas canvas) {
         List<Link> links = mSanKeyModel.getLinks();
@@ -339,37 +342,37 @@ public class SanKeyView extends View {
     }
 
     /**
-     * 处理点击事件
+     * handle click event
      *
-     * @param point 点击的点
+     * @param point the point to click
      */
     private void onActionDown(Point point) {
         if (null == sanKeyGroup) {
             sanKeyGroup = (SanKeyGroup) getParent();
         }
+
+        //todo handle click events
         Node node = inNodeRect(point);
-        mSanKeyModel.cancelSelectNodeAndLink();
         if (null != node) {
             mSanKeyModel.setSelectNode(node);
-            sanKeyGroup.showMarkView(point, mWidth, mHeight, node.getName());
+
             invalidate();
             return;
         }
         Link link = inLinkLinePath(point);
         if (null != link) {
             mSanKeyModel.setSelectLink(link);
-            sanKeyGroup.showMarkView(point, mWidth, mHeight, link.getSource() + " > " + link.getTarget() + " " + link.getValue());
             invalidate();
         } else {
-            sanKeyGroup.hideMarkView();
+
         }
     }
 
     /**
-     * 判断某个点是否在连接线的路径上
+     * Determine if a point is on the path of the connecting line
      *
-     * @param point 要判断的点
-     * @return 点所在的连接线对象
+     * @param point The point to be judged
+     * @return the connector object where the point is
      */
     private Link inLinkLinePath(Point point) {
         if (mSanKeyModel == null) {
@@ -386,9 +389,9 @@ public class SanKeyView extends View {
     }
 
     /**
-     * 判断某个点是否在节点矩形上
+     * Determine if a point is on the node rectangle
      *
-     * @param point 要判断的点
+     * @param point The point to be judged
      */
     private Node inNodeRect(Point point) {
         if (mSanKeyModel == null) {
@@ -404,11 +407,11 @@ public class SanKeyView extends View {
     }
 
     /**
-     * 判断点击点是否在某个路径内
+     * Determine if the clicked point is within a certain path
      *
-     * @param path  路径
-     * @param point 所要判断的点
-     * @return true 在路径内 false 不在路径内
+     * @param path path
+     * @param point The point to be judged
+     * @return true in path false not in path
      */
     private boolean pointInPath(Path path, Point point) {
         RectF bounds = new RectF();
@@ -425,7 +428,7 @@ public class SanKeyView extends View {
      */
     public void setData(SanKeyModel model) {
         if (null == model) {
-            //TODO 数据为空
+            //TODO data is empty
             return;
         }
         this.mSanKeyModel = model;
